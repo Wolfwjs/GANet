@@ -1,5 +1,5 @@
 # GANet
-This repo is the pytorch implementation for our paper:
+This repo is the PyTorch implementation for our paper:
 
 A Keypoint-based Global Association Network for Lane Detection. Accepted by CVPR 2022 [[arXiv](https://arxiv.org/abs/2204.07335)].
 
