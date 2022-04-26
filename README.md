@@ -94,6 +94,7 @@ We use the official evaluation tools of [CULane](https://github.com/XingangPan/S
 ```shell
 # For example, model = ganet-small 
 sh slurm_train.sh [PARTITION] [JOB_NAME] tusimple final_exp_res18_s8 ./output
+sh dist_train.sh tusimple final_exp_res18_s8 ./output
 ```
 # Citation
 If you find this repo useful for your research, please cite
