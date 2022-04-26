@@ -1,6 +1,0 @@
-file: ./output/fpn_res18_latest_iou0.5_all.txt
-tp: 77315 fp: 16441 fn: 27571
-precision: 0.824641
-recall: 0.737134
-Fmeasure: 0.778436
-

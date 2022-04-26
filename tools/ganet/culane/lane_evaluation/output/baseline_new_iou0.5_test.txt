@@ -1,6 +1,0 @@
-file: ./output/baseline_new_iou0.5_test.txt
-tp: 42243 fp: 27069 fn: 62643
-precision: 0.609462
-recall: 0.402752
-Fmeasure: 0.485
-

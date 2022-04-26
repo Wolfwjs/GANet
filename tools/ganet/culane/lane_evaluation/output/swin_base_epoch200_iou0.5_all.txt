@@ -1,6 +1,0 @@
-file: ./output/swin_base_epoch200_iou0.5_all.txt
-tp: 76956 fp: 18879 fn: 27930
-precision: 0.803005
-recall: 0.733711
-Fmeasure: 0.766796
-

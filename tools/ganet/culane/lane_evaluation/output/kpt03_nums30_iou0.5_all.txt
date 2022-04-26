@@ -1,6 +1,0 @@
-file: ./output/kpt03_nums30_iou0.5_all.txt
-tp: 71259 fp: 25405 fn: 33627
-precision: 0.737182
-recall: 0.679395
-Fmeasure: 0.70711
-

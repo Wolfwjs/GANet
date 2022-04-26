@@ -1,6 +1,0 @@
-file: ./output/res18_extend_iou0.5_all.txt
-tp: 73928 fp: 21362 fn: 30958
-precision: 0.775821
-recall: 0.704841
-Fmeasure: 0.73863
-

@@ -1,6 +1,0 @@
-file: ./output/res34_colorjitter_iou0.5_all.txt
-tp: 79295 fp: 20113 fn: 25591
-precision: 0.797672
-recall: 0.756011
-Fmeasure: 0.776283
-

@@ -1,6 +1,0 @@
-file: ./output/res101_poly_extend_iou0.5_all.txt
-tp: 78720 fp: 20764 fn: 26166
-precision: 0.791283
-recall: 0.750529
-Fmeasure: 0.770367
-

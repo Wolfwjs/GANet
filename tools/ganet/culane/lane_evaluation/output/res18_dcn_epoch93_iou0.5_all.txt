@@ -1,6 +1,0 @@
-file: ./output/res18_dcn_epoch93_iou0.5_all.txt
-tp: 77709 fp: 22821 fn: 27177
-precision: 0.772993
-recall: 0.74089
-Fmeasure: 0.756601
-

@@ -1,6 +1,0 @@
-file: ./output/fpn_res34_latest_iou0.5_all.txt
-tp: 77498 fp: 13097 fn: 27388
-precision: 0.855434
-recall: 0.738878
-Fmeasure: 0.792895
-

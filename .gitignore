@@ -1,3 +1,5 @@
 /datasets
 /mmdet.egg-info
 /tools/output
+/tools/ganet/culane/lane_evaluation/output
+/build

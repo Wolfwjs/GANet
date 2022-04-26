@@ -1,6 +1,0 @@
-file: ./output/swin_iou0.5_all.txt
-tp: 76826 fp: 18844 fn: 28060
-precision: 0.803031
-recall: 0.732471
-Fmeasure: 0.76613
-

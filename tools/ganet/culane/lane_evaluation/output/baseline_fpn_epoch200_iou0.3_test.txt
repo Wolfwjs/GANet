@@ -1,6 +1,0 @@
-file: ./output/baseline_fpn_epoch200_iou0.3_test.txt
-tp: 81846 fp: 23712 fn: 23040
-precision: 0.775365
-recall: 0.780333
-Fmeasure: 0.777841
-

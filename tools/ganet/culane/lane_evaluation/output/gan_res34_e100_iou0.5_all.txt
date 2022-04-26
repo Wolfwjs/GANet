@@ -1,6 +1,0 @@
-file: ./output/gan_res34_e100_iou0.5_all.txt
-tp: 76743 fp: 13149 fn: 28143
-precision: 0.853724
-recall: 0.73168
-Fmeasure: 0.788005
-

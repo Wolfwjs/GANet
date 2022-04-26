@@ -1,6 +1,0 @@
-file: ./output/res18_94_iou0.5_all.txt
-tp: 77853 fp: 22731 fn: 27033
-precision: 0.77401
-recall: 0.742263
-Fmeasure: 0.757804
-

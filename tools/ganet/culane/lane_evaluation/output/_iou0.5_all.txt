@@ -1,6 +1,0 @@
-file: ./output/_iou0.5_all.txt
-tp: 72134 fp: 31252 fn: 32752
-precision: 0.697715
-recall: 0.687737
-Fmeasure: 0.69269
-

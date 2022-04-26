@@ -1,6 +1,0 @@
-file: ./output/res34_transfpn_iou0.5_all.txt
-tp: 80599 fp: 24028 fn: 24287
-precision: 0.770346
-recall: 0.768444
-Fmeasure: 0.769394
-

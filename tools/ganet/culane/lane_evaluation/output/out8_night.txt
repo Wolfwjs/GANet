@@ -1,6 +1,0 @@
-file: ./output/out8_night.txt
-tp: 14751 fp: 4444 fn: 6279
-precision: 0.768481
-recall: 0.701427
-Fmeasure: 0.733424
-

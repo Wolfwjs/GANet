@@ -1,6 +1,0 @@
-file: ./output/gan_res34_epoch_97_iou0.5_all.txt
-tp: 76429 fp: 12880 fn: 28457
-precision: 0.855782
-recall: 0.728686
-Fmeasure: 0.787137
-

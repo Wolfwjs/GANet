@@ -1,6 +1,0 @@
-file: ./output/res101_dcn_iou0.5_all.txt
-tp: 78757 fp: 21412 fn: 26129
-precision: 0.786241
-recall: 0.750882
-Fmeasure: 0.768155
-
