@@ -83,19 +83,17 @@ Here are our GANet models (released on April 24th, 2022):
 | Medium  |   ResNet-34   | 127 | 97.68 | [ganet_tusimple_resnet34.pth](https://drive.google.com/file/d/1NpnWQQJPrmKHe9LAQkej3RKi9qq1allC/view?usp=sharing)  | 
 |  Large  |  ResNet-101   | 33  | 97.45 | [ganet_tusimple_resnet101.pth](https://drive.google.com/file/d/1b5kPp79MabCRH06CEGXvj_XW11SR8ROM/view?usp=sharing) | 
 
-To evalute the model, download the corresponding weights file into the `[model-path]` directory and run the following commands. Note replace `[dataset-name]` with `culane` or `tusimple`. 
+To evalute the model, download the corresponding weights file into the `[CHECKPOINT]` directory and run the following commands.
 
 ```shell
 # For example, model = ganet-small 
-python tools/ganet/[dataset-name]/test_dataset.py configs/[dataset-name]/final_exp_res18_s8.py [model-path]
-# add "--show" and add "--show_dst" to specify the save path.
-# add "--results_dst" to specify the result saving path.
+sh slurm_test [PARTITION] [JOB_NAME] tusimple final_exp_res18_s8 [CHECKPOINT]
 ```
 We use the official evaluation tools of [CULane](https://github.com/XingangPan/SCNN) and [TuSimple](https://github.com/TuSimple/tusimple-benchmark/tree/master/evaluate) to evaluate the results. And we include them in `tools` directory which may be helpful for you.
 ## Training
 ```shell
 # For example, model = ganet-small 
-## use slurm_train.sh
+sh slurm_train.sh [PARTITION] [JOB_NAME] tusimple final_exp_res18_s8 ./output
 ```
 # Citation
 If you find this repo useful for your research, please cite
