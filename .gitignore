@@ -6,4 +6,3 @@
 /dist
 /.idea
 **/__pycache__/**
-/ganet.yaml
