@@ -1,0 +1,6 @@
+file: ./output/res18_dcn_98_iou0.5_all.txt
+tp: 78048 fp: 23307 fn: 26838
+precision: 0.770046
+recall: 0.744122
+Fmeasure: 0.756862
+

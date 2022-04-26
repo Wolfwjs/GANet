@@ -1,0 +1,6 @@
+file: ./output/out6_curve.txt
+tp: 971 fp: 197 fn: 341
+precision: 0.831336
+recall: 0.740091
+Fmeasure: 0.783065
+

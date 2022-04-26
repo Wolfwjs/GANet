@@ -1,0 +1,6 @@
+file: ./output/res101_poly_iou0.5_all.txt
+tp: 79508 fp: 20881 fn: 25378
+precision: 0.791999
+recall: 0.758042
+Fmeasure: 0.774649
+

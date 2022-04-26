@@ -1,0 +1,6 @@
+file: ./output/res18_dcn_iou0.5_all.txt
+tp: 0 fp: 0 fn: 104886
+precision: -1
+recall: 0
+Fmeasure: 0
+

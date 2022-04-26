@@ -1,0 +1,6 @@
+file: ./output/res18_transfpn_iou0.5_all.txt
+tp: 79025 fp: 23760 fn: 25861
+precision: 0.768838
+recall: 0.753437
+Fmeasure: 0.76106
+

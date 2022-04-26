@@ -1,0 +1,6 @@
+file: ./output/out1_crowd.txt
+tp: 20571 fp: 5646 fn: 7432
+precision: 0.784644
+recall: 0.7346
+Fmeasure: 0.758797
+

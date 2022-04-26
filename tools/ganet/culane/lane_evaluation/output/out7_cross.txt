@@ -1,0 +1,6 @@
+file: ./output/out7_cross.txt
+tp: 0 fp: 2176 fn: 0
+precision: 0
+recall: -1
+Fmeasure: 0
+

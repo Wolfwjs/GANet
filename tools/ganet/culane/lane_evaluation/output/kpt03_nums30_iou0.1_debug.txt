@@ -1,0 +1,6 @@
+file: ./output/kpt03_nums30_iou0.1_debug.txt
+tp: 3 fp: 0 fn: 0
+precision: 1
+recall: 1
+Fmeasure: 1
+

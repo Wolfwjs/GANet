@@ -1,0 +1,6 @@
+file: ./output/res18_extend_poly_iou0.5_all.txt
+tp: 73602 fp: 19642 fn: 31284
+precision: 0.789348
+recall: 0.701733
+Fmeasure: 0.742967
+

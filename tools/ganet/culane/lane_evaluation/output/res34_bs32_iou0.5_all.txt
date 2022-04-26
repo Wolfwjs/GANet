@@ -1,0 +1,6 @@
+file: ./output/res34_bs32_iou0.5_all.txt
+tp: 78794 fp: 22551 fn: 26092
+precision: 0.777483
+recall: 0.751235
+Fmeasure: 0.764133
+

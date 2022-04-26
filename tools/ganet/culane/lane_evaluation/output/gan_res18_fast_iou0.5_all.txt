@@ -1,0 +1,6 @@
+file: ./output/gan_res18_fast_iou0.5_all.txt
+tp: 79402 fp: 21037 fn: 25484
+precision: 0.790549
+recall: 0.757031
+Fmeasure: 0.773427
+

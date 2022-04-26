@@ -1,0 +1,6 @@
+file: ./output/res34_fast_iou0.5_all.txt
+tp: 74413 fp: 10368 fn: 30473
+precision: 0.877708
+recall: 0.709466
+Fmeasure: 0.78467
+

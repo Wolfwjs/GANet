@@ -1,0 +1,6 @@
+file: ./output/trans_res34_fast_iou0.5_all.txt
+tp: 80331 fp: 20939 fn: 24555
+precision: 0.793236
+recall: 0.765889
+Fmeasure: 0.779322
+

@@ -1,0 +1,6 @@
+file: ./output/res34_pointmerge_iou0.5_all.txt
+tp: 72065 fp: 28355 fn: 32821
+precision: 0.717636
+recall: 0.687079
+Fmeasure: 0.702025
+

@@ -1,0 +1,6 @@
+file: ./output/swinbase_iou0.5_all.txt
+tp: 68551 fp: 15922 fn: 36335
+precision: 0.811514
+recall: 0.653576
+Fmeasure: 0.724032
+

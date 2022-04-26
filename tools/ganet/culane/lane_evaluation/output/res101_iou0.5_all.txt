@@ -1,0 +1,6 @@
+file: ./output/res101_iou0.5_all.txt
+tp: 76677 fp: 17459 fn: 28209
+precision: 0.814534
+recall: 0.731051
+Fmeasure: 0.770538
+

@@ -1,0 +1,6 @@
+file: ./output/kpt03_nums30_iou0.5_test_normal.txt
+tp: 28126 fp: 3182 fn: 4651
+precision: 0.898365
+recall: 0.858102
+Fmeasure: 0.877772
+

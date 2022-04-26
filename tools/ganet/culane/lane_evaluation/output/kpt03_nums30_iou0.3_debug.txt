@@ -1,0 +1,6 @@
+file: ./output/kpt03_nums30_iou0.3_debug.txt
+tp: 1 fp: 2 fn: 2
+precision: 0.333333
+recall: 0.333333
+Fmeasure: 0.333333
+

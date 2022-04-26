@@ -1,0 +1,6 @@
+file: ./output/res34_horizon_iou0.5_all.txt
+tp: 79678 fp: 20550 fn: 25208
+precision: 0.794967
+recall: 0.759663
+Fmeasure: 0.776914
+
