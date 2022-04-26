@@ -1,8 +1,11 @@
 # GANet
-This repo is the pytorch implementation for our paper:
+This repo is the PyTorch implementation for our paper:
 
-[A Keypoint-based Global Association Network for Lane Detection](https://arxiv.org/abs/2204.07335v1)
+A Keypoint-based Global Association Network for Lane Detection. Accepted by CVPR 2022 [[arXiv](https://arxiv.org/abs/2204.07335)].
+
 ![img.png](images/ganet.png)
+In this paper, we propose a Global Association Network (GANet) to formulate the lane detection problem from a new perspective, where each keypoint is directly regressed to the starting point of the lane line instead of point-by-point extension. Concretely, the association of keypoints to their belonged lane line is conducted by predicting their offsets to the corresponding starting points of lanes globally without dependence on each other, which could be done in parallel to greatly improve efficiency. In addition, we further propose a Lane-aware Feature Aggregator (LFA), which adaptively captures the local correlations between adjacent keypoints to supplement local information to the global association.
+
 ## Installation
  1. Create a conda virtual environment and activate it.
     ```shell
@@ -87,7 +90,7 @@ To evalute the model, download the corresponding weights file into the `[CHECKPO
 
 ```shell
 # For example, model = ganet-small 
-sh slurm_test [PARTITION] [JOB_NAME] tusimple final_exp_res18_s8 [CHECKPOINT]
+sh slurm_test.sh [PARTITION] [JOB_NAME] tusimple final_exp_res18_s8 [CHECKPOINT]
 ```
 We use the official evaluation tools of [CULane](https://github.com/XingangPan/SCNN) and [TuSimple](https://github.com/TuSimple/tusimple-benchmark/tree/master/evaluate) to evaluate the results. And we include them in `tools` directory which may be helpful for you.
 ## Training
