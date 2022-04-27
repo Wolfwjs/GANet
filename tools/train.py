@@ -97,7 +97,8 @@ def main():
         distributed = False
     else:
         distributed = True
-        cfg.dist_params.port = args.port
+        if args.launcher == 'slurm':
+            cfg.dist_params.port = args.port
         init_dist(args.launcher, **cfg.dist_params)
 
     # create work_dir
