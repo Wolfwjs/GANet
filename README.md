@@ -22,7 +22,7 @@ In this paper, we propose a Global Association Network (GANet) to formulate the 
     ```
 
 ## Dataset
-Download datasets and put it into `datasets/` folder. And edit the `data_root` in the config file to your dataset path.
+Download datasets and put it into `[data-path]` folder. And edit the `data_root` in the config file to your dataset path.
 ### CULane
 [\[CULane website\]](https://xingangpan.github.io/projects/CULane.html)
 [\[Download\]](https://drive.google.com/drive/folders/1mSLgwVTiaUMAb4AVOWwlCD5JcWdrwpvu)
