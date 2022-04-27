@@ -9,14 +9,12 @@ from .transforms import (Albu, Expand, MinIoURandomCrop, Normalize, Pad,
                          PhotoMetricDistortion, RandomCrop, RandomFlip, Resize,
                          SegRescale)
 from .alaug import Alaug
-from .lane_formating import CollectLaneHierarchyWeightJoint, CollectLaneHierarchyWeightJointPointSet, \
-    CollectLaneHierarchyWeightJointPointSetFPN
+from .lane_formating import CollectLanePoints
 
 
 __all__ = [
     'Alaug',
-    'CollectLaneHierarchyWeightJointPointSet', 'CollectLaneHierarchyWeightJoint',
-    'CollectLaneHierarchyWeightJointPointSetFPN',
+    'CollectLanePoints',
     'Compose', 'to_tensor', 'ToTensor', 'ImageToTensor', 'ToDataContainer',
     'Transpose', 'Collect', 'LoadAnnotations', 'LoadImageFromFile',
     'LoadMultiChannelImageFromFiles', 'LoadProposals', 'MultiScaleFlipAug',

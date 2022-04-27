@@ -172,7 +172,7 @@ train_pipeline = [
     dict(type='Normalize', **img_norm_cfg),
     dict(type='DefaultFormatBundle'),
     dict(
-        type='CollectLaneHierarchyWeightJointPointSetFPN',
+        type='CollectLanePoints',
         fpn_layer_num=fpn_layer_num,
         down_scale=mask_down_scale,
         hm_down_scale=hm_down_scale,
@@ -201,7 +201,7 @@ val_pipeline = [
     dict(type='Normalize', **img_norm_cfg),
     dict(type='DefaultFormatBundle'),
     dict(
-        type='CollectLaneHierarchyWeightJointPointSetFPN',
+        type='CollectLanePoints',
         fpn_layer_num=fpn_layer_num,
         down_scale=mask_down_scale,
         hm_down_scale=hm_down_scale,

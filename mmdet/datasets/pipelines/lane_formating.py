@@ -143,6 +143,7 @@ def ploy_fitting_cube_extend(line, h, w, sample_num=100):
         iy3 = spi.splev(new_x, ipo3)
     return np.concatenate([iy3[:, None], new_x[:, None]], axis=1)
 
+
 def ploy_fitting_cube(line, h, w, sample_num=100):
     # Y->X
     line_coords = np.array(line).reshape((-1, 2))
@@ -340,406 +341,7 @@ def sort_line_func(a, b):
 
 
 @PIPELINES.register_module
-class CollectLaneHierarchyWeightJoint(Collect):
-    def __init__(
-            self,
-            down_scale,
-            keys,
-            meta_keys=('filename', 'ori_shape', 'img_shape', 'img_norm_cfg'),
-            hm_down_scale=None,
-            kpt_downscale=1,
-            line_width=3,
-            max_mask_sample=5,
-            perspective=False,
-            radius=2,
-            root_radius=6,
-            vanished_radius=8,
-            joint_nums=4,
-            joint_weights=None,
-            sample_per_lane=100
-    ):
-        super(CollectLaneHierarchyWeightJoint, self).__init__(keys, meta_keys)
-        self.down_scale = down_scale
-        self.hm_down_scale = hm_down_scale if hm_down_scale is not None else down_scale
-        self.line_width = line_width
-        self.max_mask_sample = max_mask_sample
-        self.radius = radius
-        self.root_radius = root_radius
-        self.vanished_radius = vanished_radius
-        self.kpt_downscale = kpt_downscale
-        self.joint_nums = joint_nums
-        self.joint_weights = joint_weights
-        self.sample_per_lane = sample_per_lane
-
-    def target(self, results):
-        def min_dis_one_point(points, idx):
-            min_dis = 1e6
-            for i in range(len(points)):
-                if i == idx:
-                    continue
-                else:
-                    d = cal_dis(points[idx], points[i])
-                    if d < min_dis:
-                        min_dis = d
-            return min_dis
-
-        def assign_weight(dis, h, joints, weights=None):
-            if weights is None:
-                weights = [1, 0.4, 0.2]
-            step = h // joints
-            weight = 1
-            if dis < 0:
-                weight = weights[2]
-            elif dis < 2 * step:
-                weight = weights[0]
-            else:
-                weight = weights[1]
-            # dis_ = abs(dis)
-            # if dis_ < step:
-            #     weight = 1
-            # elif step <= dis_ < 2*step:
-            #     weight = 0.8
-            # elif 2*step <= dis_ < 3*step:
-            #     weight = 0.4
-            # else:
-            #     weight = 0.2
-            # print('offset : {}  weight : {}'.format(dis, weight))
-            return weight
-
-        output_h = int(results['img_shape'][0])
-        output_w = int(results['img_shape'][1])
-        mask_h = int(output_h // self.down_scale)
-        mask_w = int(output_w // self.down_scale)
-        hm_h = int(output_h // self.hm_down_scale)
-        hm_w = int(output_w // self.hm_down_scale)
-        results['hm_shape'] = [hm_h, hm_w]
-        results['mask_shape'] = [mask_h, mask_w]
-        # ratio_hm_mask = self.down_scale / self.hm_down_scale
-        # ratio_hm_mask = 1.0 / self.hm_down_scale
-
-        # gt init
-        gt_hm = np.zeros((1, hm_h, hm_w), np.float32)
-        reg_hm = np.zeros((2, hm_h, hm_w), np.float32)  # down sample offset
-        offset_hm = np.zeros((2 * self.joint_nums, hm_h, hm_w), np.float32)  # key points -> center points offset
-        offset_mask = np.zeros((1, hm_h, hm_w), np.float32)
-        offset_mask_weight = np.zeros((2 * self.joint_nums, hm_h, hm_w), np.float32)
-
-        gt_kpts_hm = np.zeros((1, hm_h, hm_w), np.float32)
-        gt_vp_hm = np.zeros((1, hm_h, hm_w), np.float32)
-        gt_masks = []
-
-        # gt heatmap and ins of bank
-        gt_points = results['gt_points']
-        valid_gt = []
-        end_points = []
-        start_points = []
-        for pts in gt_points:  # per lane
-            id_class = 1
-            # pts = convert_list(pts, self.down_scale)
-            pts = convert_list(pts, self.hm_down_scale)
-            if len(pts) < 2:
-                continue
-            # ploy fitting
-            # pts = ploy_fitting(pts, self.kpt_downscale)
-            pts = ploy_fitting_cube(pts, hm_h, hm_w, self.sample_per_lane)
-            if pts is None:
-                continue
-            pts = sorted(pts, key=cmp_to_key(lambda a, b: b[-1] - a[-1]))  # down sort by y
-            pts = clamp_line(pts, box=[0, 0, hm_w - 1, hm_h - 1], min_length=1)
-
-            if pts is not None and len(pts) > 1:
-                joint_points = []
-                start_point, end_point = pts[0], pts[-1]
-                delta_idx = len(pts) // self.joint_nums
-                end_points.append(end_point)
-                start_points.append(start_point)
-                for i in range(self.joint_nums):
-                    joint_points.append(pts[i * delta_idx])
-
-                # TODO: draw gt gaussian heatmap
-                for pt in pts:
-                    pt_int = (int(pt[0]), int(pt[1]))
-                    draw_umich_gaussian(gt_kpts_hm[0], pt_int, radius=self.radius)  # key points
-                    # TODO : down sample offset map
-                    # reg = pt - pt_int
-                    reg_x = pt[0] - pt_int[0]
-                    reg_y = pt[1] - pt_int[1]
-                    reg_hm[0, pt_int[1], pt_int[0]] = reg_x  # [C H W]
-                    reg_hm[1, pt_int[1], pt_int[0]] = reg_y  # [C H W]
-                    if abs(reg_x) < 2 and abs(reg_y) < 2:
-                        offset_mask[0, pt_int[1], pt_int[0]] = 1  # mask where have points
-
-                    # TODO : key points -> root_i point offset for each lane
-
-                    max_x = abs(start_point[0] - end_point[0])
-                    max_y = abs(start_point[1] - end_point[1])
-
-                    for i in range(self.joint_nums):
-                        offset_x = joint_points[i][0] - pt[0]
-                        offset_y = joint_points[i][1] - pt[1]
-                        # print('ground truth offset x:{} offset y:{}'.format(offset_x, offset_y))
-                        # weight mask
-                        mask_value = assign_weight(offset_y, max_y, self.joint_nums, self.joint_weights)
-                        offset_mask_weight[2 * i, pt_int[1], pt_int[0]] = mask_value
-                        offset_mask_weight[2 * i + 1, pt_int[1], pt_int[0]] = mask_value
-
-                        offset_hm[2 * i, pt_int[1], pt_int[0]] = offset_x
-                        offset_hm[2 * i + 1, pt_int[1], pt_int[0]] = offset_y
-
-                valid_gt.append([pts, id_class - 1])
-
-        # # draw vanished point
-        # if len(end_points) > 0:
-        #     vanish_point = np.mean(end_points, axis=0)
-        #     # print('end points {} vanished point {}'.format(end_points, vanish_point))
-        #     draw_umich_gaussian(gt_vp_hm[0], vanish_point, radius=self.vanished_radius)  # vanished point
-
-        # draw start points
-        if len(start_points) > 0:
-            for start_point in start_points:
-                draw_umich_gaussian(gt_hm[0], start_point, radius=self.root_radius)  # center points
-
-        results['gt_cpts_hm'] = DC(to_tensor(gt_hm).float(), stack=True, pad_dims=None)
-        results['gt_kpts_hm'] = DC(to_tensor(gt_kpts_hm).float(), stack=True, pad_dims=None)
-        results['int_offset'] = DC(to_tensor(reg_hm).float(), stack=True, pad_dims=None)  # downsample offset
-        results['pts_offset'] = DC(to_tensor(offset_hm).float(), stack=True,
-                                   pad_dims=None)  # key points -> center point offset
-        results['offset_mask'] = DC(to_tensor(offset_mask).float(), stack=True,
-                                    pad_dims=None)  # key points -> center point offset
-        results['offset_mask_weight'] = DC(to_tensor(offset_mask_weight).float(), stack=True,
-                                           pad_dims=None)  # key points -> center point offset
-        results['gt_vp_hm'] = DC(to_tensor(gt_vp_hm).float(), stack=True, pad_dims=None)
-        # results['gt_masks'] = gt_masks
-        results['down_scale'] = self.down_scale
-        results['hm_down_scale'] = self.hm_down_scale
-        return True
-
-    def __call__(self, results):
-        data = {}
-        img_meta = {}
-        valid = self.target(results)  # results is dict
-        if not valid:
-            return None
-        for key in self.meta_keys:
-            img_meta[key] = results[key]
-        data['img_metas'] = DC(img_meta, cpu_only=True)
-        for key in self.keys:
-            data[key] = results[key]
-        return data
-
-
-@PIPELINES.register_module
-class CollectLaneHierarchyWeightJointPointSet(Collect):
-    def __init__(
-            self,
-            down_scale,
-            keys,
-            meta_keys=('filename', 'ori_shape', 'img_shape', 'img_norm_cfg'),
-            hm_down_scale=None,
-            kpt_downscale=1,
-            line_width=3,
-            max_mask_sample=5,
-            perspective=False,
-            radius=2,
-            root_radius=6,
-            vanished_radius=8,
-            joint_nums=4,
-            joint_weights=None,
-            sample_per_lane=100,
-            max_lane_num=6
-    ):
-        super(CollectLaneHierarchyWeightJointPointSet, self).__init__(keys, meta_keys)
-        self.down_scale = down_scale
-        self.hm_down_scale = hm_down_scale if hm_down_scale is not None else down_scale
-        self.line_width = line_width
-        self.max_mask_sample = max_mask_sample
-        self.radius = radius
-        self.root_radius = root_radius
-        self.vanished_radius = vanished_radius
-        self.kpt_downscale = kpt_downscale
-        self.joint_nums = joint_nums
-        self.joint_weights = joint_weights
-        self.sample_per_lane = sample_per_lane
-        self.max_lane_num = max_lane_num
-
-    def target(self, results):
-        def min_dis_one_point(points, idx):
-            min_dis = 1e6
-            for i in range(len(points)):
-                if i == idx:
-                    continue
-                else:
-                    d = cal_dis(points[idx], points[i])
-                    if d < min_dis:
-                        min_dis = d
-            return min_dis
-
-        def assign_weight(dis, h, joints, weights=None):
-            if weights is None:
-                weights = [1, 0.4, 0.2]
-            step = h // joints
-            weight = 1
-            if dis < 0:
-                weight = weights[2]
-            elif dis < 2 * step:
-                weight = weights[0]
-            else:
-                weight = weights[1]
-            # dis_ = abs(dis)
-            # if dis_ < step:
-            #     weight = 1
-            # elif step <= dis_ < 2*step:
-            #     weight = 0.8
-            # elif 2*step <= dis_ < 3*step:
-            #     weight = 0.4
-            # else:
-            #     weight = 0.2
-            # print('offset : {}  weight : {}'.format(dis, weight))
-            return weight
-
-        output_h = int(results['img_shape'][0])
-        output_w = int(results['img_shape'][1])
-        mask_h = int(output_h // self.down_scale)
-        mask_w = int(output_w // self.down_scale)
-        hm_h = int(output_h // self.hm_down_scale)
-        hm_w = int(output_w // self.hm_down_scale)
-        results['hm_shape'] = [hm_h, hm_w]
-        results['mask_shape'] = [mask_h, mask_w]
-        # ratio_hm_mask = self.down_scale / self.hm_down_scale
-        # ratio_hm_mask = 1.0 / self.hm_down_scale
-
-        # gt init
-        gt_hm = np.zeros((1, hm_h, hm_w), np.float32)
-        reg_hm = np.zeros((2, hm_h, hm_w), np.float32)  # down sample offset
-        offset_hm = np.zeros((2 * self.joint_nums, hm_h, hm_w), np.float32)  # key points -> center points offset
-        offset_mask = np.zeros((1, hm_h, hm_w), np.float32)
-        offset_mask_weight = np.zeros((2 * self.joint_nums, hm_h, hm_w), np.float32)
-        instance_mask = -1 * np.ones([hm_h, hm_w])
-        exist_mask = np.zeros([hm_h, hm_w])
-
-        gt_kpts_hm = np.zeros((1, hm_h, hm_w), np.float32)
-        gt_vp_hm = np.zeros((1, hm_h, hm_w), np.float32)
-        gt_masks = []
-
-        # gt heatmap and ins of bank
-        gt_points = results['gt_points']
-        end_points = []
-        start_points = []
-        lane_points = []
-        for i, pts in enumerate(gt_points):  # per lane
-            # pts shape[sample_per_lane, 2] sorted by y
-            pts = convert_list(pts, self.hm_down_scale)
-            pts = sorted(pts, key=cmp_to_key(lambda a, b: b[-1] - a[-1]))  # down sort by y
-            pts = ploy_fitting_cube(pts, hm_h, hm_w, self.sample_per_lane)
-            if pts is not None:
-                pts = np.int32(clip_line(pts, hm_h, hm_w))
-                lane_points.append(pts[None, :, ::-1])  # y, x
-                pts_x = pts[:, 0]
-                pts_y = pts[:, 1]
-                exist_mask[pts_y, pts_x] = 1
-                instance_mask[pts_y, pts_x] = i
-                gauss_kernel = GaussKernel1D(kernel_size=9, sigma=2)
-                gauss_mask = gauss_conv(exist_mask, gauss_kernel)[None, :, :]
-        lane_points_align = -1 * np.ones([self.max_lane_num, self.sample_per_lane, 2])
-        if len(lane_points) != 0:
-            lane_points_align[:len(lane_points)] = np.concatenate(lane_points, axis=0)
-        else:
-            gauss_mask = gt_hm
-
-        for pts in gt_points:  # per lane
-            id_class = 1
-            # pts = convert_list(pts, self.down_scale)
-            pts = convert_list(pts, self.hm_down_scale)
-            if len(pts) < 2:
-                continue
-            # ploy fitting
-            # pts = ploy_fitting(pts, self.kpt_downscale)
-            pts = ploy_fitting_cube(pts, hm_h, hm_w, self.sample_per_lane)
-            if pts is None:
-                continue
-
-            pts = sorted(pts, key=cmp_to_key(lambda a, b: b[-1] - a[-1]))  # down sort by y
-            pts = clamp_line(pts, box=[0, 0, hm_w - 1, hm_h - 1], min_length=1)
-
-            if pts is not None and len(pts) > 1:
-                joint_points = []
-                start_point, end_point = pts[0], pts[-1]
-                delta_idx = len(pts) // self.joint_nums
-                end_points.append(end_point)
-                start_points.append(start_point)
-                for i in range(self.joint_nums):
-                    joint_points.append(pts[i * delta_idx])
-
-                # TODO: draw gt gaussian heatmap
-                for pt in pts:
-                    pt_int = (int(pt[0]), int(pt[1]))
-                    draw_umich_gaussian(gt_kpts_hm[0], pt_int, radius=self.radius)  # key points
-                    # TODO : down sample offset map
-                    # reg = pt - pt_int
-                    reg_x = pt[0] - pt_int[0]
-                    reg_y = pt[1] - pt_int[1]
-                    reg_hm[0, pt_int[1], pt_int[0]] = reg_x  # [C H W]
-                    reg_hm[1, pt_int[1], pt_int[0]] = reg_y  # [C H W]
-                    if abs(reg_x) < 2 and abs(reg_y) < 2:
-                        offset_mask[0, pt_int[1], pt_int[0]] = 1  # mask where have points
-
-                    # TODO : key points -> root_i point offset for each lane
-
-                    max_x = abs(start_point[0] - end_point[0])
-                    max_y = abs(start_point[1] - end_point[1])
-
-                    for i in range(self.joint_nums):
-                        offset_x = joint_points[i][0] - pt[0]
-                        offset_y = joint_points[i][1] - pt[1]
-                        # print('ground truth offset x:{} offset y:{}'.format(offset_x, offset_y))
-                        # weight mask
-                        mask_value = assign_weight(offset_y, max_y, self.joint_nums, self.joint_weights)
-                        offset_mask_weight[2 * i, pt_int[1], pt_int[0]] = mask_value
-                        offset_mask_weight[2 * i + 1, pt_int[1], pt_int[0]] = mask_value
-
-                        offset_hm[2 * i, pt_int[1], pt_int[0]] = offset_x
-                        offset_hm[2 * i + 1, pt_int[1], pt_int[0]] = offset_y
-
-        # draw start points
-        if len(start_points) > 0:
-            for start_point in start_points:
-                draw_umich_gaussian(gt_hm[0], start_point, radius=self.root_radius)  # center points
-
-        results['gt_cpts_hm'] = DC(to_tensor(gt_hm).float(), stack=True, pad_dims=None)
-        results['gt_kpts_hm'] = DC(to_tensor(gt_kpts_hm).float(), stack=True, pad_dims=None)
-        results['int_offset'] = DC(to_tensor(reg_hm).float(), stack=True, pad_dims=None)  # downsample offset
-        results['pts_offset'] = DC(to_tensor(offset_hm).float(), stack=True,
-                                   pad_dims=None)  # key points -> center point offset
-        results['offset_mask'] = DC(to_tensor(offset_mask).float(), stack=True,
-                                    pad_dims=None)  # key points -> center point offset
-        results['offset_mask_weight'] = DC(to_tensor(offset_mask_weight).float(), stack=True,
-                                           pad_dims=None)  # key points -> center point offset
-        results['gt_vp_hm'] = DC(to_tensor(gt_vp_hm).float(), stack=True, pad_dims=None)
-        # results['gt_masks'] = gt_masks
-        results['down_scale'] = self.down_scale
-        results['hm_down_scale'] = self.hm_down_scale
-        results['gauss_mask'] = DC(to_tensor(gauss_mask).float(), stack=True, pad_dims=None)
-        # *6 lane points shape as 6, p, 2
-        results['lane_points'] = DC(to_tensor(lane_points_align).float(), stack=True, pad_dims=None)
-
-        return True
-
-    def __call__(self, results):
-        data = {}
-        img_meta = {}
-        valid = self.target(results)  # results is dict
-        if not valid:
-            return None
-        for key in self.meta_keys:
-            img_meta[key] = results[key]
-        data['img_metas'] = DC(img_meta, cpu_only=True)
-        for key in self.keys:
-            data[key] = results[key]
-        return data
-
-
-@PIPELINES.register_module
-class CollectLaneHierarchyWeightJointPointSetFPN(Collect):
+class CollectLanePoints(Collect):
     def __init__(
             self,
             down_scale,
@@ -758,10 +360,10 @@ class CollectLaneHierarchyWeightJointPointSetFPN(Collect):
             joint_weights=None,
             sample_per_lane=[60, 30, 15, 8],
             max_lane_num=6,
-            fpn_down_scale=[4,8,16,32],
+            fpn_down_scale=[4, 8, 16, 32],
             lane_extend=False,
     ):
-        super(CollectLaneHierarchyWeightJointPointSetFPN, self).__init__(keys, meta_keys)
+        super(CollectLanePoints, self).__init__(keys, meta_keys)
         self.down_scale = down_scale
         self.fpn_layer_num = fpn_layer_num
         self.hm_down_scale = hm_down_scale if hm_down_scale is not None else down_scale
@@ -827,7 +429,7 @@ class CollectLaneHierarchyWeightJointPointSetFPN(Collect):
         gt_masks = []
 
         # gt heatmap and ins of bank
-        gt_points = results['gt_points'] # need some points
+        gt_points = results['gt_points']  # need some points
         end_points = []
         start_points = []
         for l in range(self.fpn_layer_num):
@@ -847,7 +449,7 @@ class CollectLaneHierarchyWeightJointPointSetFPN(Collect):
                     pts_f = clip_line(pts, fn_h, fn_w)
                     pts = np.int32(pts_f)
                     lane_points.append(pts[None, :, ::-1])  # y, x
-            lane_points_align = -1*np.ones([self.max_lane_num, self.sample_per_lane[l], 2])
+            lane_points_align = -1 * np.ones([self.max_lane_num, self.sample_per_lane[l], 2])
             if len(lane_points) != 0:
                 lane_points_align[:len(lane_points)] = np.concatenate(lane_points, axis=0)
             else:
@@ -865,9 +467,9 @@ class CollectLaneHierarchyWeightJointPointSetFPN(Collect):
             # pts = ploy_fitting(pts, self.kpt_downscale)
 
             if self.lane_extend:
-                pts = ploy_fitting_cube_extend(pts, hm_h, hm_w, int(360/self.hm_down_scale))
+                pts = ploy_fitting_cube_extend(pts, hm_h, hm_w, int(360 / self.hm_down_scale))
             else:
-                pts = ploy_fitting_cube(pts, hm_h, hm_w, int(360/self.hm_down_scale))
+                pts = ploy_fitting_cube(pts, hm_h, hm_w, int(360 / self.hm_down_scale))
             if pts is None:
                 continue
 
@@ -913,12 +515,10 @@ class CollectLaneHierarchyWeightJointPointSetFPN(Collect):
                         offset_hm[2 * i, pt_int[1], pt_int[0]] = offset_x
                         offset_hm[2 * i + 1, pt_int[1], pt_int[0]] = offset_y
 
-
         # draw start points
         if len(start_points) > 0:
             for start_point in start_points:
                 draw_umich_gaussian(gt_hm[0], start_point, radius=self.root_radius)  # start points
-
 
         results['gt_cpts_hm'] = DC(to_tensor(gt_hm).float(), stack=True, pad_dims=None)
         results['gt_kpts_hm'] = DC(to_tensor(gt_kpts_hm).float(), stack=True, pad_dims=None)
