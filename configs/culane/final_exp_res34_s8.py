@@ -10,7 +10,7 @@ fpn_layer_num = 3                                # check
 fpn_down_scale = [8,16,32]                       # check
 mask_down_scale = 8                              # check
 hm_down_scale = 8                                # check
-# mask_size = (1, 40, 100)
+
 line_width = 3
 radius = 2  # gaussian circle radius
 root_radius = 4
@@ -186,7 +186,6 @@ train_pipeline = [
         joint_weights=joint_weights,
         sample_per_lane=sample_per_lane,
         fpn_down_scale=fpn_down_scale,
-        # keys=['img', 'gt_hm'],
         keys=['img', 'gt_cpts_hm', 'gt_kpts_hm', 'int_offset', 'pts_offset',
               'gt_masks', *[f'lane_points_l{i}' for i in range(fpn_layer_num)],
               'offset_mask', 'offset_mask_weight', 'gt_vp_hm'],
@@ -215,7 +214,6 @@ val_pipeline = [
         joint_weights=joint_weights,
         sample_per_lane=sample_per_lane,
         fpn_down_scale=fpn_down_scale,
-        # keys=['img', 'gt_hm'],
         keys=['img', 'gt_cpts_hm', 'gt_kpts_hm', 'int_offset', 'pts_offset',
               'gt_masks', *[f'lane_points_l{i}' for i in range(fpn_layer_num)],
               'offset_mask', 'offset_mask_weight', 'gt_vp_hm'],
