@@ -91,6 +91,7 @@ To evalute the model, download the corresponding weights file into the `[CHECKPO
 ```shell
 # For example, model = ganet-small 
 sh slurm_test.sh [PARTITION] [JOB_NAME] tusimple final_exp_res18_s8 [CHECKPOINT]
+sh dist_train.sh tusimple final_exp_res18_s8 [CHECKPOINT]
 ```
 We use the official evaluation tools of [CULane](https://github.com/XingangPan/SCNN) and [TuSimple](https://github.com/TuSimple/tusimple-benchmark/tree/master/evaluate) to evaluate the results. And we include them in `tools` directory which may be helpful for you.
 ## Training
