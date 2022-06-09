@@ -1,7 +1,7 @@
 # GANet
 This repo is the PyTorch implementation for our paper:
 
-A Keypoint-based Global Association Network for Lane Detection. Accepted by CVPR 2022 [[arXiv](https://arxiv.org/abs/2204.07335)].
+[[A Keypoint-based Global Association Network for Lane Detection](https://arxiv.org/abs/2204.07335)]. Accepted by CVPR 2022.
 
 ![img.png](images/ganet.png)
 In this paper, we propose a Global Association Network (GANet) to formulate the lane detection problem from a new perspective, where each keypoint is directly regressed to the starting point of the lane line instead of point-by-point extension. Concretely, the association of keypoints to their belonged lane line is conducted by predicting their offsets to the corresponding starting points of lanes globally without dependence on each other, which could be done in parallel to greatly improve efficiency. In addition, we further propose a Lane-aware Feature Aggregator (LFA), which adaptively captures the local correlations between adjacent keypoints to supplement local information to the global association.
