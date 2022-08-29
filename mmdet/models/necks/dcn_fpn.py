@@ -115,7 +115,7 @@ class AttentionLayer(nn.Module):
         x = self.pre_conv(x)
         m_batchsize, _, height, width = x.size()
         if pos is not None:
-            x += pos
+            x = x + pos
         proj_query = self.query_conv(x).view(m_batchsize, -1,
                                              width * height).permute(0, 2, 1)
         proj_key = self.key_conv(x).view(m_batchsize, -1, width * height)
