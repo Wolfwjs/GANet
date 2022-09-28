@@ -1,0 +1,10 @@
+hm_thr = 0.4  # no use
+kpt_thr = 0.3 # 0.3  # threshold for kpt_hm
+cpt_thr = 0.3  # threshold for cpt_hm  --no use if dont cluster by root
+points_thr = 7  # minimal point nums per lane
+cluster_thr = 4  # cluster distance
+cluster_by_center_thr = 4
+group_fast = True
+# points_thr = [5, 7, 9]  # minimal point nums per lane
+# cluster_thr = [3, 4, 5]  # cluster distance
+# cluster_by_center_thr = [3, 4, 5]

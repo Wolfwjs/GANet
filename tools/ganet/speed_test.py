@@ -7,8 +7,10 @@ import torch
 
 from mmcv.runner import load_checkpoint
 from mmdet.models import build_detector
-from mmdet.utils.general_utils import Timer
 from post_process import PostProcessor
+from mmcv import Timer
+
+from plugin import *
 
 torch.backends.cudnn.benchmark = True
 torch.backends.cudnn.deterministic = True
@@ -43,7 +45,7 @@ def main():
     if args.checkpoint is not None:
         load_checkpoint(model, args.checkpoint, map_location='cpu')
 
-    img = cv2.imread('test.jpg')
+    img = cv2.imread('tools/ganet/test.jpg')
     # img = img[270:, ...]
     img = cv2.resize(img, SIZE)
     mean = np.array([75.3, 76.6, 77.6])
@@ -53,17 +55,21 @@ def main():
     model = model.cuda().eval()
     x = x.cuda()
 
-    post_processor = PostProcessor(use_offset=True, cluster_thr=3)
-    # warm up
+    post_processor = PostProcessor(use_offset=True, cluster_thr=3, group_fast=True)
+    kwargs = dict(
+        thr=0.3,
+        kpt_thr=0.3,
+        cpt_thr=0.3,
+    )
+    # warm up 
     for i in range(1000):
-        seeds, _ = model.test_inference(x)
-        post_processor(seeds, 4)
+        output = model.test_inference(x,**kwargs)
+        post_processor(output['seeds'], 4)
 
     with Timer("Elapsed time in all model infernece: %f"):
         for i in range(1000):
-            seeds, _ = model.test_inference(x)
-            lanes, seeds = post_processor(seeds, 4)
-
+            output = model.test_inference(x,**kwargs)
+            post_processor(output['seeds'], 4)
 
 if __name__ == '__main__':
     main()

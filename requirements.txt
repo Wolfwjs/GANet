@@ -1,0 +1,11 @@
+albumentations==0.4.6
+matplotlib
+numpy
+opencv_python
+Pillow
+scikit_learn
+scipy
+setuptools
+Shapely
+ujson
+tensorboard

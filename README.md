@@ -9,10 +9,13 @@ In this paper, we propose a Global Association Network (GANet) to formulate the 
 ## Installation
  1. Create a conda virtual environment and activate it.
     ```shell
-    conda create -n ganet python=3.7 -y
+    conda create -n ganet python=3.8 -y
     conda activate ganet
-    conda install pytorch==1.6.0 torchvision==0.7.0 cudatoolkit=10.1 -c pytorch -y
-    pip install -r requirements/build.txt
+    conda install pytorch=1.8 torchvision=0.9.0 cudatoolkit=10.1 -c pytorch
+    pip install openmim
+    mim install mmcv-full
+    mim install mmdet
+    pip install -r requirements.txt
     ```
  2. Clone this repository and enter it:
     ```Shell
@@ -90,14 +93,12 @@ To evalute the model, download the corresponding weights file into the `[CHECKPO
 
 ```shell
 # For example, model = ganet-small 
-sh slurm_test.sh [PARTITION] [JOB_NAME] tusimple final_exp_res18_s8 [CHECKPOINT]
 sh dist_test.sh tusimple final_exp_res18_s8 [CHECKPOINT]
 ```
 We use the official evaluation tools of [CULane](https://github.com/XingangPan/SCNN) and [TuSimple](https://github.com/TuSimple/tusimple-benchmark/tree/master/evaluate) to evaluate the results. And we include them in `tools` directory which may be helpful for you.
 ## Training
 ```shell
 # For example, model = ganet-small 
-sh slurm_train.sh [PARTITION] [JOB_NAME] tusimple final_exp_res18_s8 ./output
 sh dist_train.sh tusimple final_exp_res18_s8 ./output
 ```
 # Citation

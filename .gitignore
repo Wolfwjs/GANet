@@ -1,8 +1,10 @@
-/datasets
-/mmdet.egg-info
-/tools/output
-/tools/ganet/culane/lane_evaluation/output
-/build
-/dist
-/.idea
+/.ipynb_checkpoints
+/.vscode
+/work_dirs
+/tools/ganet/culane_out
+/tools/ganet/culane/evaluate/evaluate # Need to run `make` again in ./tools/ganet/culane/evaluate
+/*.egg-info
+/plugin/ops/dcn/*.so
+cookies.txt
 **/__pycache__/**
+/build

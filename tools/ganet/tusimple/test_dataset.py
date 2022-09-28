@@ -15,10 +15,10 @@ from mmcv.parallel import MMDataParallel
 from mmcv.runner import init_dist, load_checkpoint
 from mmdet.datasets import build_dataloader, build_dataset
 from mmdet.models import build_detector
-from mmdet.utils.general_utils import mkdir, path_join
+# from mmdet.utils.general_utils import mmcv.mkdir_or_exist, os.path.join
 from tools.ganet.common import tusimple_convert_formal, COLORS
 from tools.ganet.post_process import PostProcessor
-
+from plugin import *
 
 def parse_args():
     parser = argparse.ArgumentParser(description='MMDet test detector')
@@ -173,12 +173,12 @@ def single_gpu_test(seg_model,
     prog_bar = mmcv.ProgressBar(len(dataset))
     if save_param:
         if result_dst is not None:
-            mkdir(result_dst)
+            mmcv.mkdir_or_exist(result_dst)
             dst_dir = os.path.join(result_dst, f'test_{kpt_thr}_{points_thr}_{cluster_by_center_thr}_{cluster_thr}.json')
             f_dst = open(dst_dir, 'w')
     else:
         if result_dst is not None:
-            mkdir(result_dst)
+            mmcv.mkdir_or_exist(result_dst)
             dst_dir = os.path.join(result_dst, 'test.json')
             f_dst = open(dst_dir, 'w')
     for i, data in enumerate(data_loader):
@@ -200,7 +200,7 @@ def single_gpu_test(seg_model,
                 img_shape=img_shape, points_thr=points_thr)
             # print('result:', result)
             if result_dst is not None:
-                mkdir(result_dst)
+                mmcv.mkdir_or_exist(result_dst)
                 # dst_dir = os.path.join(result_dst, 'test.json')
                 tusimple_lanes = tusimple_convert_formal(
                     result, h_samples, ori_shape[1])
@@ -216,10 +216,10 @@ def single_gpu_test(seg_model,
             filename = data['img_metas'].data[0][0]['filename']
             img_vis, img_gt_vis, virtual_center_vis, img_circle = vis_one(result, virtual_center, cluster_center, filename, img_info)
             save_name = sub_name.replace('/', '.')
-            dst_show_dir = path_join(show, save_name)
-            dst_show_gt_dir = path_join(show, save_name + '.gt.jpg')
-            dst_show_vc_dir = path_join(show, save_name + '.vc.jpg')
-            dst_show_cc_dir = path_join(show, save_name + '.cc.jpg')
+            dst_show_dir = os.path.join(show, save_name)
+            dst_show_gt_dir = os.path.join(show, save_name + '.gt.jpg')
+            dst_show_vc_dir = os.path.join(show, save_name + '.vc.jpg')
+            dst_show_cc_dir = os.path.join(show, save_name + '.cc.jpg')
             cv2.imwrite(dst_show_dir, img_vis)
             cv2.imwrite(dst_show_gt_dir, img_gt_vis)
             cv2.imwrite(dst_show_vc_dir, virtual_center_vis)
@@ -272,7 +272,7 @@ def main():
     else:
         show_dst = args.show_dst
     if args.show is not None and args.show:
-        # mkdir(args.show_dst)
+        # mmcv.mkdir_or_exist(args.show_dst)
         if not os.path.exists(args.show_dst):
             os.makedirs(args.show_dst)
     print(args.result_dst)

@@ -17,10 +17,9 @@ from mmcv.parallel import MMDataParallel, MMDistributedDataParallel
 from mmcv.runner import get_dist_info, init_dist, load_checkpoint
 from mmdet.datasets import build_dataloader, build_dataset
 from mmdet.models import build_detector
-from mmdet.utils.general_utils import mkdir
 from tools.ganet.common import COLORS, parse_lanes
 from tools.ganet.post_process import PostProcessor
-
+from plugin import *
 
 def parse_args():
     parser = argparse.ArgumentParser(description='MMDet test detector')
@@ -211,7 +210,7 @@ def single_gpu_test(seg_model,
             #       '\nsub_dst_name{} \ndst_dir{} \ndst_folder{}'.format(
             #     sub_name, img_shape, sub_dst_name, dst_dir, dst_folder
             # ))
-            mkdir(dst_folder)
+            mmcv.mkdir_or_exist(dst_folder)
             output = seg_model(
                 return_loss=False, rescale=False, thr=hm_thr, kpt_thr=kpt_thr, cpt_thr=cpt_thr, **data)
             downscale = data['img_metas'].data[0][0]['down_scale']
@@ -227,12 +226,12 @@ def single_gpu_test(seg_model,
             basename = '{}_'.format(num_failed) + sub_name[1:].replace(
                 '/', '.')
             dst_show_dir = os.path.join(show, basename)
-            mkdir(show)
+            mmcv.mkdir_or_exist(show)
             cv2.imwrite(dst_show_dir, img_vis)
             dst_gt_dir = os.path.join(show, basename + '.gt.jpg')
             dst_show_vc_dir = os.path.join(show, basename + '.vc.jpg')
             dst_show_cc_dir = os.path.join(show, basename + '.cc.jpg')
-            mkdir(show)
+            mmcv.mkdir_or_exist(show)
             cv2.imwrite(dst_gt_dir, img_gt_vis)
             cv2.imwrite(dst_show_cc_dir, img_circle)
             cv2.imwrite(dst_show_vc_dir, virtual_center_vis)

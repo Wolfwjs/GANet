@@ -1,6 +1,4 @@
 import os
-os.chdir('..')
-
 import argparse
 import glob
 import cv2
@@ -28,19 +26,23 @@ def generate_grid(points_map):
 
 parser = argparse.ArgumentParser(
         description='MMDet test (and eval) a model')
-parser.add_argument('config_name', default="pointMerge_id3")
+parser.add_argument('config', default="")
+parser.add_argument('cp', default="")
 args = parser.parse_args()
 
-config = f"configs/magiclanenet/tusimple/{args.config_name}.py"
+config = args.config
+checkpoint = args.cp
+config_name = ".".join(config.split('/')[-2:])
 cfg = Config.fromfile(config)
 cfg.data.samples_per_gpu = 1
-gt_path = '/mnt/lustre/wangjinsheng/project/lane-detection/conditional-lane-detection/datasets/tusimple/test_label.json'
-pred_path = sorted(glob.glob(f'tools/output/tusimple/{args.config_name}_2021*/result/test.json'))[-1]
-print(pred_path)
-# p: 多检测的 n: 少检测的
+
+gt_path = '/data1/hrz/datasets/tusimple/test_baseline.json'
+pred_path = '/data1/hrz/GANet/work_dirs/tusimple/results/test.json'
+
 criterias, _ = LaneEval.bench_one_submit(pred_path, gt_path, return_each=True)
 bad_p = torch.arange(len(criterias['p']))[torch.tensor(criterias['p']) > 0]
 bad_n = torch.arange(len(criterias['n']))[torch.tensor(criterias['n']) > 0]
+# p: 多检测的 n: 少检测的
 # print(bad_p)
 # print(bad_n)
 # cfg.val_pipeline[-1] = cfg.train_pipeline[-1]
@@ -52,15 +54,15 @@ data_loader = build_dataloader(
     workers_per_gpu=cfg.data.workers_per_gpu,
     dist=False,
     shuffle=False)
-checkpoint = sorted(glob.glob(f'tools/output/tusimple/{args.config_name}_2021*/latest.pth'))[-1]
+
 print(checkpoint)
-model = build_detector(cfg.model, train_cfg=cfg.train_cfg, test_cfg=cfg.test_cfg)
-model.load_state_dict(torch.load(checkpoint, map_location='cpu')['state_dict'], strict=True)
+model = build_detector(cfg.model)
+model.load_state_dict(torch.load(checkpoint, map_location='cpu')['state_dict'], strict=False)
 model.eval()
 model = MMDataParallel(model.cuda(), device_ids=[0])
 
 for i, data in enumerate(data_loader):
-    label = 'None'
+    label = ' '
     # if i not in bad_p and i not in bad_n:
     #     continue
     # label = ''
@@ -76,28 +78,28 @@ for i, data in enumerate(data_loader):
     b = image.shape[0]
     results = model.module.test_inference(image, thr=thr, kpt_thr=kpt_thr, cpt_thr=cpt_thr)
 
-    if not os.path.exists(f"debug/{args.config_name}/"):
-        os.makedirs(f"debug/{args.config_name}/")
+    if not os.path.exists(f"debug/{config_name}/"):
+        os.makedirs(f"debug/{config_name}/")
     # result map
-    cpts_hm    = results['cpts_hm'][0, 0].detach().cpu().sigmoid().numpy()
-    gt_cpts_hm = data['gt_cpts_hm'].data[0][0, 0].detach().cpu().numpy()
+    # cpts_hm    = results['cpts_hm'][0, 0].detach().cpu().sigmoid().numpy()
+    # gt_cpts_hm = data['gt_cpts_hm'].data[0][0, 0].detach().cpu().numpy()
     kpts_hm    = results['kpts_hm'][0, 0].detach().cpu().sigmoid().numpy()
     gt_kpts_hm = data['gt_kpts_hm'].data[0][0, 0].detach().cpu().numpy()
     # seeds      = results['seeds'] # align
     # hm         = results['hm']
     image      = image[0, 0].detach().cpu().numpy()
-    if not os.path.exists(f"debug/{args.config_name}/%04d/"%i):
-        os.makedirs(f"debug/{args.config_name}/%04d/"%i)
-    plt.imsave(f"debug/{args.config_name}/%04d/{label}result_cpts_hm.png"%i, cpts_hm)
-    plt.imsave(f"debug/{args.config_name}/%04d/{label}gt_cpts_hm.png"%i,     gt_cpts_hm)
-    plt.imsave(f"debug/{args.config_name}/%04d/{label}result_kpts_hm.png"%i, kpts_hm)
-    plt.imsave(f"debug/{args.config_name}/%04d/{label}gt_kpts_hm.png"%i,     gt_kpts_hm)
-    plt.imsave(f"debug/{args.config_name}/%04d/{label}image.png"%i,          image)
+    if not os.path.exists(f"debug/{config_name}/%04d/"%i):
+        os.makedirs(f"debug/{config_name}/%04d/"%i)
+    # plt.imsave(f"debug/{config_name}/%04d/{label}result_cpts_hm.png"%i, cpts_hm)
+    # plt.imsave(f"debug/{config_name}/%04d/{label}gt_cpts_hm.png"%i,     gt_cpts_hm)
+    plt.imsave(f"debug/{config_name}/%04d/{label}result_kpts_hm.png"%i, kpts_hm)
+    plt.imsave(f"debug/{config_name}/%04d/{label}gt_kpts_hm.png"%i,     gt_kpts_hm)
+    plt.imsave(f"debug/{config_name}/%04d/{label}image.png"%i,          image)
 
     layer = 0
     dp_num = cfg.dcn_point_num
-    if not os.path.exists(f"debug/{args.config_name}/%04d/dcn_points_l{layer}/"%i):
-        os.makedirs(f"debug/{args.config_name}/%04d/dcn_points_l{layer}/"%i)
+    if not os.path.exists(f"debug/{config_name}/%04d/dcn_points_l{layer}/"%i):
+        os.makedirs(f"debug/{config_name}/%04d/dcn_points_l{layer}/"%i)
     # cood = data[f'lane_points_l{layer}'].data[0][0].reshape(-1, 2).long()
     # print(cood)
     # cood = torch.cat([c[None, ...] for c in cood if c[0] > 0])
@@ -133,13 +135,13 @@ for i, data in enumerate(data_loader):
         heat_img = cv2.cvtColor(heat_img, cv2.COLOR_BGR2RGB)
         # plt.imshow(heat_img)
         heat_img = cv2.resize(heat_img, (400, 160), interpolation=cv2.INTER_NEAREST)
-        plt.imsave(f"debug/{args.config_name}/%04d/dcn_points_l{layer}/%03d.png"%(i,p_id), heat_img)
+        plt.imsave(f"debug/{config_name}/%04d/dcn_points_l{layer}/%03d.png"%(i,p_id), heat_img)
 
     # hm_thr=cfg.hm_thr
     # kpt_thr=cfg.kpt_thr
     # cpt_thr=cfg.cpt_thr
     # points_thr=cfg.points_thr
-    # result_dst=f"debug/{args.config_name}/%04d"%i
+    # result_dst=f"debug/{config_name}/%04d"%i
     # cluster_thr=cfg.cluster_thr
     # crop_bbox=(0, 160, 1280, 720)
     # sub_name = data['img_metas'].data[0][0]['sub_img_name']
