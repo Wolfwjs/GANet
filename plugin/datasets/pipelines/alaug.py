@@ -29,7 +29,7 @@ class albumentation(object):
                     self.get_al_params(transform['params'])
                 else:
                     transform = self.build_transforms(transform)
-                    if transform is not None:
+                    if transform != None:
                         self.transforms.append(transform)
             else:
                 raise TypeError('transform must be a dict')
@@ -53,7 +53,7 @@ class albumentation(object):
             for t in transforms:
                 parmas = {
                     key: value
-                    for key, value in t.items() if key is not 'type'
+                    for key, value in t.items() if key != 'type'
                 }
                 choice = getattr(al, t['type'])(**parmas)
                 choices.append(choice)
@@ -61,7 +61,7 @@ class albumentation(object):
 
         parmas = {
             key: value
-            for key, value in transform.items() if key is not 'type'
+            for key, value in transform.items() if key != 'type'
         }
         return getattr(al, transform['type'])(**parmas)
 

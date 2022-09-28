@@ -19,4 +19,4 @@ python -m torch.distributed.launch \
     --seed 0 \
     --launcher pytorch ${@:3}
 
-# CUDA_VISIBLE_DEVICES=0,1,2,3 bash tools/dist_train.sh configs/culane/final_exp_res101_s4.py 4 --resume-from work_dirs/culane/large/epoch_40.pth
+# CUDA_VISIBLE_DEVICES=0,1,2,3 bash tools/dist_train.sh configs/culane/final_exp_res101_s4.py 4 --resume-from work_dirs/culane/large/epoch_45.pth

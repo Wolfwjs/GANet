@@ -2,7 +2,7 @@
 
 out_path=tools/ganet/culane_out
 gt_dir=/data2/hrz/datasets/culane/
-pred_dir=/data1/hrz/GANet/work_dirs/culane/results/
+pred_dir=work_dirs/culane/results/
 
 rm -rf $out_path
 mkdir $out_path
@@ -33,15 +33,15 @@ out6=${out_path}/out6_curve.txt
 out7=${out_path}/out7_cross.txt
 out8=${out_path}/out8_night.txt
 out9=${out_path}/out9_total.txt
-/data1/hrz/GANet/tools/ganet/culane/evaluate/evaluate -a $gt_dir -d $pred_dir -i $gt_dir -l $list0 -w $w_lane -t $iou -c $im_w -r $im_h -f $frame -o $out0
-/data1/hrz/GANet/tools/ganet/culane/evaluate/evaluate -a $gt_dir -d $pred_dir -i $gt_dir -l $list1 -w $w_lane -t $iou -c $im_w -r $im_h -f $frame -o $out1
-/data1/hrz/GANet/tools/ganet/culane/evaluate/evaluate -a $gt_dir -d $pred_dir -i $gt_dir -l $list2 -w $w_lane -t $iou -c $im_w -r $im_h -f $frame -o $out2
-/data1/hrz/GANet/tools/ganet/culane/evaluate/evaluate -a $gt_dir -d $pred_dir -i $gt_dir -l $list3 -w $w_lane -t $iou -c $im_w -r $im_h -f $frame -o $out3
-/data1/hrz/GANet/tools/ganet/culane/evaluate/evaluate -a $gt_dir -d $pred_dir -i $gt_dir -l $list4 -w $w_lane -t $iou -c $im_w -r $im_h -f $frame -o $out4
-/data1/hrz/GANet/tools/ganet/culane/evaluate/evaluate -a $gt_dir -d $pred_dir -i $gt_dir -l $list5 -w $w_lane -t $iou -c $im_w -r $im_h -f $frame -o $out5
-/data1/hrz/GANet/tools/ganet/culane/evaluate/evaluate -a $gt_dir -d $pred_dir -i $gt_dir -l $list6 -w $w_lane -t $iou -c $im_w -r $im_h -f $frame -o $out6
-/data1/hrz/GANet/tools/ganet/culane/evaluate/evaluate -a $gt_dir -d $pred_dir -i $gt_dir -l $list7 -w $w_lane -t $iou -c $im_w -r $im_h -f $frame -o $out7
-/data1/hrz/GANet/tools/ganet/culane/evaluate/evaluate -a $gt_dir -d $pred_dir -i $gt_dir -l $list8 -w $w_lane -t $iou -c $im_w -r $im_h -f $frame -o $out8
-/data1/hrz/GANet/tools/ganet/culane/evaluate/evaluate -a $gt_dir -d $pred_dir -i $gt_dir -l $list9 -w $w_lane -t $iou -c $im_w -r $im_h -f $frame -o $out9
+tools/ganet/culane/evaluate/evaluate -a $gt_dir -d $pred_dir -i $gt_dir -l $list0 -w $w_lane -t $iou -c $im_w -r $im_h -f $frame -o $out0
+tools/ganet/culane/evaluate/evaluate -a $gt_dir -d $pred_dir -i $gt_dir -l $list1 -w $w_lane -t $iou -c $im_w -r $im_h -f $frame -o $out1
+tools/ganet/culane/evaluate/evaluate -a $gt_dir -d $pred_dir -i $gt_dir -l $list2 -w $w_lane -t $iou -c $im_w -r $im_h -f $frame -o $out2
+tools/ganet/culane/evaluate/evaluate -a $gt_dir -d $pred_dir -i $gt_dir -l $list3 -w $w_lane -t $iou -c $im_w -r $im_h -f $frame -o $out3
+tools/ganet/culane/evaluate/evaluate -a $gt_dir -d $pred_dir -i $gt_dir -l $list4 -w $w_lane -t $iou -c $im_w -r $im_h -f $frame -o $out4
+tools/ganet/culane/evaluate/evaluate -a $gt_dir -d $pred_dir -i $gt_dir -l $list5 -w $w_lane -t $iou -c $im_w -r $im_h -f $frame -o $out5
+tools/ganet/culane/evaluate/evaluate -a $gt_dir -d $pred_dir -i $gt_dir -l $list6 -w $w_lane -t $iou -c $im_w -r $im_h -f $frame -o $out6
+tools/ganet/culane/evaluate/evaluate -a $gt_dir -d $pred_dir -i $gt_dir -l $list7 -w $w_lane -t $iou -c $im_w -r $im_h -f $frame -o $out7
+tools/ganet/culane/evaluate/evaluate -a $gt_dir -d $pred_dir -i $gt_dir -l $list8 -w $w_lane -t $iou -c $im_w -r $im_h -f $frame -o $out8
+tools/ganet/culane/evaluate/evaluate -a $gt_dir -d $pred_dir -i $gt_dir -l $list9 -w $w_lane -t $iou -c $im_w -r $im_h -f $frame -o $out9
 
 # bash tools/ganet/culane/evaluate/eval_all.sh
