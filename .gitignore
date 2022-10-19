@@ -1,10 +1,14 @@
-/.ipynb_checkpoints
-/.vscode
 /work_dirs
-/tools/ganet/culane_out
-/tools/ganet/culane/evaluate/evaluate # Need to run `make` again in ./tools/ganet/culane/evaluate
+/pr_models
+/.vscode
+/show*
+/.ipynb_checkpoints
+/.dist_test
+projects/plugin/core/evaluation/culane_evaluate/evaluate # Need to run `make` again in projects/plugin/core/evaluation/culane_evaluate
+output.txt
 /*.egg-info
-/plugin/ops/dcn/*.so
+/projects/plugin/ops/dcn/*.so
 cookies.txt
 **/__pycache__/**
 /build
+a.txt

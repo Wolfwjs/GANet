@@ -1,13 +1,14 @@
 # Copyright (c) OpenMMLab. All rights reserved.
+import sys
+sys.path.insert(0,"./")
 import argparse
 import copy
 import os
+os.environ['OMP_NUM_THREADS']="1"
+os.environ['MKL_NUM_THREADS']="1"
 import os.path as osp
 import time
 import warnings
-
-os.environ['OMP_NUM_THREADS']="1"
-os.environ['MKL_NUM_THREADS']="1"
 
 import mmcv
 import torch
@@ -23,7 +24,7 @@ from mmdet.models import build_detector
 from mmdet.utils import (collect_env, get_device, get_root_logger,
                          replace_cfg_vals, setup_multi_processes,
                          update_data_root)
-from plugin import *
+from projects.plugin import *
 
 
 def parse_args():
@@ -38,7 +39,7 @@ def parse_args():
         help='resume from the latest checkpoint automatically')
     parser.add_argument(
         '--no-validate',
-        action='store_false',
+        action='store_true',
         help='whether not to evaluate the checkpoint during training')
     group_gpus = parser.add_mutually_exclusive_group()
     group_gpus.add_argument(
@@ -218,7 +219,7 @@ def main():
         train_cfg=cfg.get('train_cfg'),
         test_cfg=cfg.get('test_cfg'))
     model.init_weights()
-
+    model = torch.nn.SyncBatchNorm.convert_sync_batchnorm(model)
     datasets = [build_dataset(cfg.data.train)]
     if len(cfg.workflow) == 2:
         val_dataset = copy.deepcopy(cfg.data.val)

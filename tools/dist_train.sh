@@ -1,22 +1,26 @@
 #!/usr/bin/env bash
-
-CONFIG=$1
-GPUS=$2
+# export NCCL_IB_DISABLE=1
+CONFIG=$1 # projects/config/tucurve/final_exp_res18_s8.py
+GPUS=${GPUS:-1}
 NNODES=${NNODES:-1}
 NODE_RANK=${NODE_RANK:-0}
-PORT=${PORT:-28900}
+PORT=${PORT:-29510}
 MASTER_ADDR=${MASTER_ADDR:-"127.0.0.1"}
+PY_ARGS=${@:2}
 
-PYTHONPATH="$(dirname $0)/..":$PYTHONPATH \
+root=$(dirname $0)/.. # tools
+
+PYTHONPATH=$root:$PYTHONPATH \
 python -m torch.distributed.launch \
     --nnodes=$NNODES \
     --node_rank=$NODE_RANK \
     --master_addr=$MASTER_ADDR \
     --nproc_per_node=$GPUS \
     --master_port=$PORT \
-    $(dirname "$0")/train.py \
+    $root/tools/train.py \
     $CONFIG \
-    --seed 0 \
-    --launcher pytorch ${@:3}
+    --launcher="pytorch" \
+    ${PY_ARGS}
 
-# CUDA_VISIBLE_DEVICES=0,1,2,3 bash tools/dist_train.sh configs/culane/final_exp_res101_s4.py 4 --resume-from work_dirs/culane/large/epoch_45.pth
+# CUDA_VISIBLE_DEVICES=0,1,2,3 GPUS=4 bash tools/dist_train.sh projects/cfgs/tusimple/final_exp_res101_s4.py --resume-from work_dirs/culane/large/epoch_50.pth
+# nccl先单个后并行
