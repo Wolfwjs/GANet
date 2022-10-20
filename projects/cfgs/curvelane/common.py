@@ -30,7 +30,7 @@ dist_params = dict(backend='nccl')
 find_unused_parameters=True
 
 checkpoint_config = dict(interval=10)
-evaluation = dict(interval=1,save_best="F1",greater_keys=['F1'])
+evaluation = dict(interval=10,save_best="F1",greater_keys=['F1'])
 log_level = 'INFO'
 log_config = dict(
     interval=1,

@@ -104,47 +104,47 @@ class CulaneDataset(TuSimpleDataset):
         print(f"\nwriting culane results to {save_dir}")
         return save_dir
 
-    def evaluate_p(self, outputs, **eval_kwargs):
-        pr_dir = self.format_results(outputs) if outputs else self.work_dir + '/format'
-        gt_dir = self.data_root
-        pr_dir = pr_dir+'/' if pr_dir[-1]!='/' else pr_dir
-        gt_dir = gt_dir+'/' if gt_dir[-1]!='/' else gt_dir
-        w_lane=30;
-        iou=0.5  # Set iou to 0.3 or 0.5
-        im_w=1640
-        im_h=590
-        frame=1
-        F1_pa = re.compile("Fmeasure: (.*)")
-        PR_pa = re.compile("precision: (.*)")
-        RE_pa = re.compile("recall: (.*)")
-        FP_pa = re.compile("fp: (\d*)")
-        FN_pa = re.compile("fn: (\d*)")
-        TP_pa = re.compile("tp: (\d*)")
-        metric_pa = {"F1":F1_pa,
-                    "precise":PR_pa,
-                    "recall":RE_pa,
-                    "FP":FP_pa,
-                    "FN":FN_pa,
-                    "TP":TP_pa,
-                    }
-        ret = {}
-        starttime = datetime.datetime.now()
-        for data_list in self.evaluate_data_list:
-            print(f"evaluating {data_list}...")
-            name = os.path.basename(data_list).split('.')[0].split('_')[-1]
-            p = subprocess.Popen(f"tools/ganet/culane/culane_evaluate/evaluate -a {gt_dir} -d {pr_dir} -i {gt_dir} -l {data_list} -w {w_lane} -t {iou} -c {im_w} -r {im_h} -f {frame}", stdout=subprocess.PIPE, shell=True)
-            p.wait()
-            output = p.stdout.read().decode('utf-8')
-            # print(output)
-            for k in metric_pa:
-                val = re.findall(metric_pa[k],output)[0]
-                ret[f"{name}_{k}"] = float(val)
-        endtime = datetime.datetime.now()
-        print(f"{(endtime-starttime).seconds}s elapse...")
-        if self.check_or_not: 
-            z_metric = self.check(pr_dir)
-            ret.update(**z_metric)
-        return ret
+    # def evaluate_p(self, outputs, **eval_kwargs):
+    #     pr_dir = self.format_results(outputs) if outputs else self.work_dir + '/format'
+    #     gt_dir = self.data_root
+    #     pr_dir = pr_dir+'/' if pr_dir[-1]!='/' else pr_dir
+    #     gt_dir = gt_dir+'/' if gt_dir[-1]!='/' else gt_dir
+    #     w_lane=30;
+    #     iou=0.5  # Set iou to 0.3 or 0.5
+    #     im_w=1640
+    #     im_h=590
+    #     frame=1
+    #     F1_pa = re.compile("Fmeasure: (.*)")
+    #     PR_pa = re.compile("precision: (.*)")
+    #     RE_pa = re.compile("recall: (.*)")
+    #     FP_pa = re.compile("fp: (\d*)")
+    #     FN_pa = re.compile("fn: (\d*)")
+    #     TP_pa = re.compile("tp: (\d*)")
+    #     metric_pa = {"F1":F1_pa,
+    #                 "precise":PR_pa,
+    #                 "recall":RE_pa,
+    #                 "FP":FP_pa,
+    #                 "FN":FN_pa,
+    #                 "TP":TP_pa,
+    #                 }
+    #     ret = {}
+    #     starttime = datetime.datetime.now()
+    #     for data_list in self.evaluate_data_list:
+    #         print(f"evaluating {data_list}...")
+    #         name = os.path.basename(data_list).split('.')[0].split('_')[-1]
+    #         p = subprocess.Popen(f"tools/ganet/culane/culane_evaluate/evaluate -a {gt_dir} -d {pr_dir} -i {gt_dir} -l {data_list} -w {w_lane} -t {iou} -c {im_w} -r {im_h} -f {frame}", stdout=subprocess.PIPE, shell=True)
+    #         p.wait()
+    #         output = p.stdout.read().decode('utf-8')
+    #         # print(output)
+    #         for k in metric_pa:
+    #             val = re.findall(metric_pa[k],output)[0]
+    #             ret[f"{name}_{k}"] = float(val)
+    #     endtime = datetime.datetime.now()
+    #     print(f"{(endtime-starttime).seconds}s elapse...")
+    #     if self.check_or_not: 
+    #         z_metric = self.check(pr_dir)
+    #         ret.update(**z_metric)
+    #     return ret
 
 
     def evaluate(self, outputs, **eval_kwargs):

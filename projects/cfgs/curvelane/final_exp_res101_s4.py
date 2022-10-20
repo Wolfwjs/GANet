@@ -2,7 +2,7 @@ from projects.cfgs.curvelane.test_common_s4 import *
 from projects.cfgs.curvelane.common import *
 
 batch_size = 8
-num_workers = 8
+num_workers = 4
 work_dir = './work_dirs/curvelane/large'
 load_from = None
 resume_from = None

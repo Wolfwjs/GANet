@@ -8,7 +8,7 @@ from projects.plugin import *
 
 # 不重新生成预测，直接用原来生成的预测
 def test_culane(metric=None):
-    metric = {'cross_F1': 0.0, 'cross_precise': 0.0, 'cross_recall': -1.0, 'cross_FP': 1450.0, 'cross_FN': 0.0, 'cross_TP': 0.0, 'curve_F1': 0.780026, 'curve_precise': 0.896142, 'curve_recall': 0.690549, 'curve_FP': 105.0, 'curve_FN': 406.0, 'curve_TP': 906.0, 'hlight_F1': 0.730211, 'hlight_precise': 0.821826, 'hlight_recall': 0.656973, 'hlight_FP': 240.0, 'hlight_FN': 578.0, 'hlight_TP': 1107.0, 'shadow_F1': 0.737683, 'shadow_precise': 0.814364, 'shadow_recall': 0.6742, 'shadow_FP': 442.0, 'shadow_FN': 937.0, 'shadow_TP': 1939.0, 'arrow_F1': 0.901693, 'arrow_precise': 0.935179, 'arrow_recall': 0.870522, 'arrow_FP': 192.0, 'arrow_FN': 412.0, 'arrow_TP': 2770.0, 'noline_F1': 0.526034, 'noline_precise': 0.703452, 'noline_recall': 0.420084, 'noline_FP': 2483.0, 'noline_FN': 8131.0, 'noline_TP': 5890.0, 'night_F1': 0.743549, 'night_precise': 0.833038, 'night_recall': 0.671422, 'night_FP': 2830.0, 'night_FN': 6910.0, 'night_TP': 14120.0, 'crowd_F1': 0.782913, 'crowd_precise': 0.843105, 'crowd_recall': 0.730743, 'crowd_FP': 3808.0, 'crowd_FN': 7540.0, 'crowd_TP': 20463.0, 'normal_F1': 0.93521, 'normal_precise': 0.94817, 'normal_recall': 0.922598, 'normal_FP': 1653.0, 'normal_FN': 2537.0, 'normal_TP': 30240.0, 'test_F1': 0.792077, 'test_precise': 0.854333, 'test_recall': 0.738278, 'test_FP': 13203.0, 'test_FN': 27451.0, 'test_TP': 77435.0, 'znum': 0, 'znum_img': 0, 'demo': '', 'z_ratio': 0.0}
+    metric = {'cross_F1': 0.0, 'cross_precise': 0.0, 'cross_recall': -1.0, 'cross_FP': 1532.0, 'cross_FN': 0.0, 'cross_TP': 0.0, 'curve_F1': 0.750433, 'curve_precise': 0.869478, 'curve_recall': 0.660061, 'curve_FP': 130.0, 'curve_FN': 446.0, 'curve_TP': 866.0, 'hlight_F1': 0.714676, 'hlight_precise': 0.840964, 'hlight_recall': 0.621365, 'hlight_FP': 198.0, 'hlight_FN': 638.0, 'hlight_TP': 1047.0, 'shadow_F1': 0.797321, 'shadow_precise': 0.88676, 'shadow_recall': 0.72427, 'shadow_FP': 266.0, 'shadow_FN': 793.0, 'shadow_TP': 2083.0, 'arrow_F1': 0.895419, 'arrow_precise': 0.937436, 'arrow_recall': 0.857008, 'arrow_FP': 182.0, 'arrow_FN': 455.0, 'arrow_TP': 2727.0, 'noline_F1': 0.511864, 'noline_precise': 0.750069, 'noline_recall': 0.388489, 'noline_FP': 1815.0, 'noline_FN': 8574.0, 'noline_TP': 5447.0, 'night_F1': 0.72641, 'night_precise': 0.858356, 'night_recall': 0.629624, 'night_FP': 2185.0, 'night_FN': 7789.0, 'night_TP': 13241.0, 'crowd_F1': 0.771689, 'crowd_precise': 0.867407, 'crowd_recall': 0.694997, 'crowd_FP': 2975.0, 'crowd_FN': 8541.0, 'crowd_TP': 19462.0, 'normal_F1': 0.928923, 'normal_precise': 0.94832, 'normal_recall': 0.910303, 'normal_FP': 1626.0, 'normal_FN': 2940.0, 'normal_TP': 29837.0, 'test_F1': 0.784336, 'test_precise': 0.872587, 'test_recall': 0.712297, 'test_FP': 10909.0, 'test_FN': 30176.0, 'test_TP': 74710.0, 'znum': 12, 'znum_img': 3, 'demo': ['./work_dirs/culane/large/format/driver_100_30frame/05251444_0422.MP4/02610.lines.txt', './work_dirs/culane/large/format/driver_193_90frame/06051050_0624.MP4/02610.lines.txt', './work_dirs/culane/large/format/driver_193_90frame/06051059_0627.MP4/00180.lines.txt'], 'z_ratio': 8.650519031141868e-05}
     for t in "test Normal Crowd hlight Shadow Noline Arrow Curve Cross Night".lower().split():
         print(f'{metric[f"{t}_F1"]*100:.2f}',end=' ')
 
@@ -38,18 +38,18 @@ def do_eval(cfg):
     print(metric)
     return metric
 
-# if __name__ == '__main__':
-#     parser = argparse.ArgumentParser()
-#     parser.add_argument('config', help='test config file path')
-#     args = parser.parse_args()
-#     metric = do_eval(args.config)
-#     if 'culane' in args.config:
-#         test_culane(metric)
-#     elif 'curvelane' in args.config:
-#         test_curvelane(metric)
-#     elif 'tusimple' in args.config:
-#         test_tusimple(metric)
-# test_tusimple()
-# OMP_NUM_THREADS
-test_culane()
-# 16,891s
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('config', help='test config file path')
+    args = parser.parse_args()
+    metric = do_eval(args.config)
+    if 'culane' in args.config:
+        test_culane(metric)
+    elif 'curvelane' in args.config:
+        test_curvelane(metric)
+    elif 'tusimple' in args.config:
+        test_tusimple(metric)
+# # test_tusimple()
+# # OMP_NUM_THREADS
+# test_culane()
+# # 16,891s

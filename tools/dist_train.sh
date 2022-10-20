@@ -22,5 +22,5 @@ python -m torch.distributed.launch \
     --launcher="pytorch" \
     ${PY_ARGS}
 
-# CUDA_VISIBLE_DEVICES=0,1,2,3 GPUS=4 bash tools/dist_train.sh projects/cfgs/tusimple/final_exp_res101_s4.py --resume-from work_dirs/culane/large/epoch_50.pth
+# CUDA_VISIBLE_DEVICES=0,1,2,3 GPUS=4 bash tools/dist_train.sh projects/cfgs/curvelane/final_exp_res18_s8.py
 # nccl先单个后并行

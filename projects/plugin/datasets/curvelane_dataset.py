@@ -42,6 +42,7 @@ class CurvelaneDataset(CulaneDataset):
                 iou_thresh=0.5,
                 lane_width=5
             )
+        self.evaluate_data_list = data_list
     
     def set_ori_shape(self, idx):
         ori_filename = self.img_infos[idx]['raw_file']

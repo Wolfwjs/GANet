@@ -26,3 +26,4 @@ python -m torch.distributed.launch \
 
 # CUDA_VISIBLE_DEVICES=0,1,2,3 GPUS=4 bash tools/dist_test.sh projects/cfgs/culane/final_exp_res101_s4.py pr_models/ganet_culane_resnet101.pth --eval (--show-dir ./show)
 # CUDA_VISIBLE_DEVICES=0,1,2,3 GPUS=4 bash tools/dist_test.sh projects/cfgs/culane/final_exp_res101_s4.py work_dirs/culane/large/epoch_80.pth --eval (--show-dir ./show)
+# CUDA_VISIBLE_DEVICES=0,1,2,3 GPUS=4 bash tools/dist_test.sh /data1/hrz/myGANet/projects/cfgs/curvelane/final_exp_res18_s8.py /data1/hrz/myGANet/work_dirs/curvelane/small/best_F1_epoch_60.pth --eval
