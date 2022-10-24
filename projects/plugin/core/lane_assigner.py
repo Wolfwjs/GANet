@@ -69,10 +69,7 @@ class LaneAssigner():
         cost = ((gt_points_-points_)**2).sum(-2).detach().cpu() # compute the distance bt pred and gt [b, l, p, g, k]
         # print(cost.shape)
         # bimatch
-        try:
-            indices = [[[linear_sum_assignment(cost[b_, l_, ..., g_])[1] for g_ in range(g)] for l_ in range(l)] for b_ in range(b)] # b, l, k, (x, y)
-        except:
-            print(1)
+        indices = [[[linear_sum_assignment(cost[b_, l_, ..., g_])[1] for g_ in range(g)] for l_ in range(l)] for b_ in range(b)] # b, l, k, (x, y)
         indices = np.array(indices)
         # align the point bt gt and pred
         gt_points_match = torch.cat(
