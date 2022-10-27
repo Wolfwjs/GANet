@@ -5,6 +5,8 @@ This repo is the PyTorch implementation for our paper:
 
 ![img.png](images/ganet.png)
 In this paper, we propose a Global Association Network (GANet) to formulate the lane detection problem from a new perspective, where each keypoint is directly regressed to the starting point of the lane line instead of point-by-point extension. Concretely, the association of keypoints to their belonged lane line is conducted by predicting their offsets to the corresponding starting points of lanes globally without dependence on each other, which could be done in parallel to greatly improve efficiency. In addition, we further propose a Lane-aware Feature Aggregator (LFA), which adaptively captures the local correlations between adjacent keypoints to supplement local information to the global association.
+## Update
+* [2022/10/27]: We have released a new version of GANet, updated the version of dependent packages, and simplified the code. Switch to the mmdet2_25 branch for details.
 
 ## Installation
  1. Create a conda virtual environment and activate it.
