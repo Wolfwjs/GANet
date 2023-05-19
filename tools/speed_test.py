@@ -60,7 +60,7 @@ def main():
     x = torch.unsqueeze(torch.from_numpy(img).permute(2, 0, 1), 0) # torch.Size([1, 3, 320, 800])
     model = model.cuda().eval()
     x = x.cuda()
-    img_metas = dict(img_shape=SIZE[::-1],filename=filename)
+    img_metas = [dict(img_shape=SIZE[::-1],filename=filename)]
 
     # warm up
     for i in range(1000):
